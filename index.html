@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MySprueKit.net - Home</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&family=Courier+Prime&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --win-face:#d4d0c8;--win-dark:#808080;--win-blue:#000080;
+  --link:#0000ee;--yellow-btn:#f8d000;--marquee-bg:#000080;
+}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Courier Prime','Courier New',monospace;font-size:13px;background:var(--win-face);}
+
+/* ── PAGES ── */
+.page{position:fixed;inset:0;display:none;flex-direction:column;}
+.page.active{display:flex;}
+
+/* ── TASKBAR ── */
+.taskbar{position:fixed;bottom:0;left:0;right:0;height:30px;background:linear-gradient(180deg,#1c5aa0,#1358a0 8%,#1976d2 50%,#1565bd);border-top:1px solid #5b9bd5;display:flex;align-items:center;z-index:9999;padding:0 4px;gap:4px;}
+.tb-start{display:flex;align-items:center;gap:5px;background:linear-gradient(180deg,#3ea83e,#258925 40%,#1a7a1a);border:1px solid #1a6a1a;border-radius:10px;padding:2px 10px 2px 6px;height:24px;font-family:'Arial Black',sans-serif;font-size:12px;font-weight:900;font-style:italic;color:#fff;text-shadow:1px 1px 0 #000;flex-shrink:0;cursor:pointer;}
+.tb-win{height:22px;min-width:150px;background:linear-gradient(180deg,#4a8fcf,#2b6cb0);border:1px inset #5b9bd5;display:flex;align-items:center;padding:0 8px;gap:4px;font-size:11px;color:#fff;font-family:Tahoma,sans-serif;font-weight:bold;cursor:pointer;}
+.tb-win.active{background:linear-gradient(180deg,#2b6cb0,#1a4a8a);border-style:inset;}
+.tb-tray{margin-left:auto;background:linear-gradient(180deg,#1266b5,#1a7ad4 50%,#1266b5);border-left:1px solid #5b9bd5;height:100%;display:flex;align-items:center;padding:0 8px;gap:6px;font-family:Tahoma,sans-serif;font-size:11px;color:#fff;}
+
+/* ── IE CHROME ── */
+.ie-chrome{display:flex;flex-direction:column;flex:1;min-height:0;border:2px solid;border-color:#fff #808080 #808080 #fff;}
+.ie-titlebar{height:26px;background:linear-gradient(90deg,#000080,#1084d0 60%,#000080);display:flex;align-items:center;padding:0 4px;gap:4px;flex-shrink:0;}
+.ie-ico{width:16px;height:16px;background:#1e90ff;border-radius:50%;border:1px solid #87ceeb;flex-shrink:0;position:relative;}
+.ie-ico::after{content:'e';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Arial;font-size:9px;font-weight:bold;font-style:italic;color:#fff;}
+.ie-ttxt{flex:1;font-family:Tahoma,sans-serif;font-size:11px;color:#fff;font-weight:bold;}
+.tc{width:16px;height:14px;background:var(--win-face);border:1px solid;border-color:#fff #808080 #808080 #fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:Tahoma;font-weight:bold;cursor:pointer;flex-shrink:0;}
+.tc:hover{background:#d0d0d0;}.tc.cls:hover{background:#cc0000;color:#fff;}
+.ie-menu{height:20px;background:var(--win-face);border-bottom:1px solid var(--win-dark);display:flex;align-items:center;padding:0 4px;flex-shrink:0;}
+.mi{padding:1px 8px;font-family:Tahoma,sans-serif;font-size:11px;cursor:pointer;}
+.mi:hover{background:var(--win-blue);color:#fff;}
+.ie-toolbar{height:34px;background:var(--win-face);border-bottom:1px solid var(--win-dark);display:flex;align-items:center;padding:0 4px;gap:2px;flex-shrink:0;}
+.tbt{height:28px;min-width:36px;background:var(--win-face);border:1px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;padding:0 4px;}
+.tbt:hover{border-color:#fff #808080 #808080 #fff;}
+.tbi{font-size:14px;line-height:1;}.tbl{font-family:Tahoma;font-size:8px;}
+.ie-addr{flex:1;height:22px;background:#fff;border:1px inset var(--win-dark);display:flex;align-items:center;padding:0 4px;gap:4px;font-family:Tahoma;font-size:11px;overflow:hidden;}
+.ie-addr span{color:var(--link);white-space:nowrap;}
+.go{height:22px;padding:0 10px;background:var(--win-face);border:1px solid;border-color:#fff #808080 #808080 #fff;font-family:Tahoma;font-size:11px;cursor:pointer;}
+.ie-status{height:22px;background:var(--win-face);border-top:1px solid var(--win-dark);display:flex;align-items:center;padding:0 6px;gap:10px;flex-shrink:0;font-family:Tahoma;font-size:11px;}
+.sp{height:18px;border:1px inset var(--win-dark);display:flex;align-items:center;padding:0 6px;font-size:10px;}
+.sp.main{flex:1;}.sp.zone{width:120px;}
+
+/* ── PAGE SCROLL AREA ── */
+.pg{flex:1;overflow-y:auto;overflow-x:auto;background:linear-gradient(180deg,#c8e8ff,#a8d4f5 30%,#90c8f0);min-height:0;}
+.outer{display:flex;min-height:100%;align-items:flex-start;}
+
+/* ── SITE WRAPPER ── */
+.site{flex:1;min-width:0;min-height:100%;background:#fff;border-left:1px solid var(--win-dark);border-right:1px solid var(--win-dark);}
+.site-hdr{background:linear-gradient(180deg,#0050aa,#0070cc 40%,#0060bb);padding:6px 10px;border-bottom:3px solid #ffcc00;display:flex;align-items:center;gap:10px;}
+.site-logo{font-family:'VT323',monospace;font-size:28px;color:#ffcc00;text-shadow:2px 2px 0 #000;letter-spacing:.05em;line-height:1;}
+.site-logo span{color:#fff;}
+.hdr-r{margin-left:auto;text-align:right;}
+.hdr-r a{font-size:10px;color:#aad4ff;text-decoration:none;display:block;line-height:1.6;}
+.hdr-r a:hover{color:#fff;}
+.hdr-user{font-family:'VT323';font-size:16px;color:#ffcc00;}
+.site-nav{background:linear-gradient(180deg,#1060c0,#0050aa);display:flex;border-bottom:2px solid #ffcc00;}
+.nl{padding:4px 14px;font-family:Tahoma,sans-serif;font-size:11px;font-weight:bold;color:#fff;border-right:1px solid rgba(255,255,255,.25);cursor:pointer;}
+.nl:hover,.nl.act{background:#ffcc00;color:#000;}
+.marquee-wrap{background:var(--marquee-bg);color:#00ff00;font-family:'VT323',monospace;font-size:16px;padding:2px 0;border-bottom:1px solid #00ff00;overflow:hidden;white-space:nowrap;}
+.mq{display:inline-block;animation:mqScroll 18s linear infinite;padding-left:100%;}
+@keyframes mqScroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+
+/* ── CONTENT LAYOUT ── */
+.cw{display:flex;}
+.sb{width:150px;flex-shrink:0;background:#d4e8f8;border-right:1px solid #a0b8cc;padding:8px 6px;font-size:11px;}
+.sbh{background:linear-gradient(180deg,#1060c0,#0050aa);color:#fff;font-weight:bold;font-family:Tahoma;font-size:11px;padding:2px 6px;margin-bottom:4px;border:1px outset #0050aa;}
+.sbl{display:block;color:var(--link);font-size:11px;padding:1px 4px;font-family:Tahoma;text-decoration:none;cursor:pointer;}
+.sbl:hover{background:#ffff80;}
+.sbs{margin-bottom:12px;}
+.gbt{display:block;width:88px;height:31px;margin:3px auto;border:1px solid #808080;font-size:8px;text-align:center;line-height:31px;font-family:'Press Start 2P',monospace;color:#fff;cursor:pointer;}
+.gbt.bl{background:#000080;}.gbt.gn{background:#007700;}.gbt.or{background:#cc5500;}.gbt.rd{background:#990000;}
+.vbox{background:#000;border:2px inset #808080;padding:4px;text-align:center;margin:6px 0;}
+.vnum{font-family:'VT323',monospace;font-size:22px;color:#ff0000;letter-spacing:.15em;text-shadow:0 0 4px #ff0000;}
+.vlbl{font-size:9px;color:#00ff00;font-family:monospace;}
+.mc{flex:1;min-width:0;padding:10px;background:#fff;}
+.sct{background:linear-gradient(180deg,#1060c0,#0050aa);color:#fff;font-family:Tahoma;font-weight:bold;font-size:12px;padding:3px 8px;margin-bottom:8px;border:1px outset #0050aa;display:flex;align-items:center;gap:6px;}
+.sct::before{content:'►';font-size:9px;}
+.rc{width:120px;flex-shrink:0;padding:8px 6px;background:#f0f8ff;border-left:1px solid #a0b8cc;font-size:10px;}
+.rch{background:var(--win-blue);color:#fff;font-family:Tahoma;font-size:10px;font-weight:bold;padding:2px 4px;margin-bottom:4px;}
+.rci{border:1px solid #a0b8cc;background:#fff;padding:4px;margin-bottom:6px;font-family:Tahoma;font-size:10px;}
+.bb{background:linear-gradient(180deg,#d4ecff,#a8d4f5);border-top:2px solid #0050aa;padding:6px 10px;display:flex;align-items:center;gap:10px;font-size:10px;}
+.bi{width:88px;height:31px;background:#000080;border:1px solid #808080;display:flex;align-items:center;justify-content:center;font-family:'Press Start 2P';font-size:7px;color:#ffcc00;text-align:center;cursor:pointer;flex-shrink:0;}
+.bi:hover{background:#000060;}
+
+/* ── KIT TABLE ── */
+#kit-table{width:100%;border-collapse:collapse;font-family:Tahoma,Arial,sans-serif;font-size:11px;}
+#kit-table th{background:linear-gradient(180deg,#6699cc,#4477aa);color:#fff;font-weight:bold;padding:4px 8px;border:1px solid #3366aa;text-align:left;}
+#kit-table td{padding:6px 8px;border:1px solid #c0c8d8;vertical-align:middle;}
+#kit-table tr:nth-child(even) td{background:#e8f0ff;}
+#kit-table tr:hover td{background:#ffff88;cursor:pointer;}
+.kthumb{width:80px;height:70px;border:2px inset #808080;overflow:hidden;background:#e0e8f0;display:flex;align-items:center;justify-content:center;}
+.kthumb img{width:100%;height:100%;object-fit:cover;}
+.kname{font-weight:bold;color:#000080;font-size:12px;cursor:pointer;}
+.kname:hover{text-decoration:underline;color:var(--link);}
+.kdesc{color:#333;line-height:1.5;}
+.kprice{font-family:'VT323',monospace;font-size:22px;color:#cc0000;white-space:nowrap;text-align:center;}
+.kstock{text-align:center;font-size:10px;}
+.sok{color:green;font-weight:bold;}.slow{color:orange;font-weight:bold;}.snew{color:purple;font-weight:bold;}
+.btn-buy{display:block;width:72px;background:var(--yellow-btn);border:2px outset #cc9900;font-family:Tahoma;font-size:10px;font-weight:bold;text-align:center;padding:3px;cursor:pointer;color:#000;margin:3px auto;}
+.btn-buy:hover{background:#ffdd00;border-style:inset;}
+.btn-cart{display:block;width:72px;background:#44aa00;border:2px outset #226600;font-family:Tahoma;font-size:10px;font-weight:bold;text-align:center;padding:3px;cursor:pointer;color:#fff;margin:3px auto;}
+.btn-cart:hover{background:#55cc00;border-style:inset;}
+
+/* ── CSS CUBE ── */
+.mini-cube{width:40px;height:40px;transform-style:preserve-3d;animation:spinCube 5s linear infinite;}
+.mini-cube.s1{animation-delay:0s;}.mini-cube.s2{animation-delay:-1.5s;}.mini-cube.s3{animation-delay:-3s;}
+@keyframes spinCube{from{transform:rotateY(0deg) rotateX(20deg);}to{transform:rotateY(360deg) rotateX(20deg);}}
+.mf{position:absolute;width:36px;height:36px;left:2px;top:2px;border:1px solid;background:rgba(0,100,200,.15);}
+.mf.f{transform:translateZ(18px);border-color:rgba(0,150,255,.7);}
+.mf.b{transform:rotateY(180deg) translateZ(18px);border-color:rgba(0,150,255,.7);}
+.mf.l{transform:rotateY(-90deg) translateZ(18px);border-color:rgba(0,100,200,.5);}
+.mf.r{transform:rotateY(90deg) translateZ(18px);border-color:rgba(0,100,200,.5);}
+.mf.t{transform:rotateX(90deg) translateZ(18px);border-color:rgba(0,200,255,.4);}
+.mf.bt{transform:rotateX(-90deg) translateZ(18px);border-color:rgba(0,200,255,.4);}
+
+/* ── ADS ── */
+.ad-col{width:130px;flex-shrink:0;padding:5px 3px;display:flex;flex-direction:column;gap:4px;}
+.ad{border:2px outset #c0c0c0;background:#fff;font-size:10px;text-align:center;padding:4px;cursor:pointer;overflow:hidden;}
+.ad:hover{border-style:inset;}
+.adt{font-weight:bold;font-size:11px;line-height:1.3;margin-bottom:2px;}
+.adb{font-size:10px;line-height:1.4;color:#333;}
+.acta{display:inline-block;margin-top:3px;padding:2px 7px;font-size:9px;font-weight:bold;color:#fff;border:1px solid;}
+.abl{animation:abl .55s step-end infinite;}
+@keyframes abl{50%{visibility:hidden}}
+.a88{width:88px;height:31px;margin:2px auto 0;border:1px solid #808080;display:flex;align-items:center;justify-content:center;font-family:'Press Start 2P',monospace;font-size:6px;color:#fff;line-height:1.3;text-align:center;}
+
+/* ── POPUPS ── */
+.popup{position:fixed;background:var(--win-face);border:2px solid;border-color:#fff #808080 #808080 #fff;box-shadow:2px 2px 0 #000;z-index:2000;min-width:200px;font-family:Tahoma,Arial,sans-serif;font-size:11px;display:none;}
+.ptb{height:20px;background:linear-gradient(90deg,#000080,#1084d0 60%,#000080);display:flex;align-items:center;padding:0 4px;gap:4px;cursor:default;}
+.ptb.err{background:linear-gradient(90deg,#800000,#cc0000 60%,#800000);}
+.pico{font-size:12px;}.pttl{flex:1;color:#fff;font-size:11px;font-weight:bold;}
+.px{width:14px;height:12px;background:var(--win-face);border:1px solid;border-color:#fff #808080 #808080 #fff;display:flex;align-items:center;justify-content:center;font-size:9px;cursor:pointer;}
+.px:hover{background:#cc0000;color:#fff;}
+.pbody{padding:10px 12px 8px;display:flex;align-items:flex-start;gap:10px;}
+.pico2{font-size:28px;flex-shrink:0;}.ptxt{flex:1;line-height:1.5;font-size:11px;}
+.pbtns{padding:6px 10px 8px;display:flex;justify-content:center;gap:6px;border-top:1px solid var(--win-dark);}
+.wb{min-width:70px;padding:3px 8px;background:var(--win-face);border:2px solid;border-color:#fff #808080 #808080 #fff;font-family:Tahoma;font-size:11px;cursor:pointer;}
+.wb:hover{background:#d0d0d0;}.wb.def{border-width:3px;}
+.blink{animation:blink .8s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── FADE ── */
+#fade{position:fixed;inset:0;background:#fff;z-index:99999;pointer-events:none;transition:opacity .4s;}
+#fade.gone{opacity:0;}
+
+::-webkit-scrollbar{width:16px;height:16px;}
+::-webkit-scrollbar-track{background:var(--win-face);}
+::-webkit-scrollbar-thumb{background:var(--win-face);border:1px solid;border-color:#fff #808080 #808080 #fff;}
+
+/* ──────────────────────────────────────────────────────
+   ITEM DETAIL PAGE
+────────────────────────────────────────────────────── */
+.detail-layout{display:flex;gap:0;}
+.detail-img-col{width:260px;flex-shrink:0;padding:12px;border-right:1px solid #c0c8d8;}
+.detail-img-frame{border:3px inset #808080;background:#e8f0f8;width:100%;aspect-ratio:1;overflow:hidden;display:flex;align-items:center;justify-content:center;margin-bottom:8px;}
+.detail-img-frame img{width:100%;height:100%;object-fit:cover;}
+.detail-thumbs{display:flex;gap:4px;}
+.detail-thumb{width:44px;height:44px;border:2px outset #808080;background:#d0d8e8;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.detail-thumb:hover{border-style:inset;}
+.detail-thumb img{width:100%;height:100%;object-fit:cover;}
+.detail-thumb.active{border-style:inset;border-color:#0000ee;}
+.detail-info-col{flex:1;padding:12px 14px;}
+.detail-name{font-family:'VT323',monospace;font-size:32px;color:#000080;text-shadow:1px 1px 0 #c0c8d8;margin-bottom:2px;line-height:1;}
+.detail-sub{font-size:10px;color:#808080;font-family:Tahoma;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+.detail-price-box{background:linear-gradient(135deg,#fffbe0,#fff8c0);border:2px inset #cc9900;padding:8px 12px;display:inline-block;margin-bottom:12px;}
+.detail-price{font-family:'VT323',monospace;font-size:36px;color:#cc0000;line-height:1;}
+.detail-price-note{font-size:9px;color:#666;font-family:Tahoma;}
+.detail-table{width:100%;border-collapse:collapse;margin-bottom:12px;font-family:Tahoma;font-size:11px;}
+.detail-table td{padding:4px 8px;border:1px solid #c0c8d8;vertical-align:top;}
+.detail-table tr:nth-child(even) td{background:#f0f4ff;}
+.detail-table td:first-child{font-weight:bold;color:#000080;width:35%;white-space:nowrap;}
+.tos-box{background:#f8f4e8;border:1px solid #c0b888;padding:6px 8px;font-size:9px;color:#555;font-family:Tahoma;line-height:1.6;margin-bottom:10px;max-height:80px;overflow-y:auto;}
+.detail-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.dbuy{padding:7px 22px;background:var(--yellow-btn);border:3px outset #cc9900;font-family:Tahoma;font-size:11px;font-weight:bold;cursor:pointer;color:#000;}
+.dbuy:hover{border-style:inset;background:#ffdd00;}
+.dbuy:active{border-style:inset;}
+.dcart{padding:7px 18px;background:#44aa00;border:3px outset #226600;font-family:Tahoma;font-size:11px;font-weight:bold;cursor:pointer;color:#fff;}
+.dcart:hover{background:#55cc00;border-style:inset;}
+.dwish{padding:7px 12px;background:var(--win-face);border:2px outset #808080;font-family:Tahoma;font-size:10px;cursor:pointer;}
+.dwish:hover{border-style:inset;}
+.back-link{display:inline-block;margin-bottom:8px;font-family:Tahoma;font-size:11px;color:var(--link);cursor:pointer;text-decoration:underline;}
+.back-link:hover{color:#cc0000;}
+</style>
+</head>
+<body>
+<div id="fade"></div>
+
+<!-- ════════════ POPUPS ════════════ -->
+<div class="popup" id="pop1" style="top:120px;left:80px;">
+  <div class="ptb"><span class="pico">⚠</span><span class="pttl">Something went wrong</span><span class="px" onclick="this.closest('.popup').style.display='none'">✕</span></div>
+  <div class="pbody"><span class="pico2">⚠️</span><div class="ptxt">Connection to<br><b>myspruekit.net</b> unstable.<br>Retry? Some data may<br>not display correctly.</div></div>
+  <div class="pbtns"><button class="wb def" onclick="this.closest('.popup').style.display='none'">Retry</button><button class="wb" onclick="this.closest('.popup').style.display='none'">Cancel</button></div>
+</div>
+
+<div class="popup" id="pop2" style="top:200px;right:100px;">
+  <div class="ptb err"><span class="pico">✖</span><span class="pttl">MYSPRUEKIT.EXE</span><span class="px" onclick="this.closest('.popup').style.display='none'">✕</span></div>
+  <div class="pbody"><span class="pico2">🚫</span><div class="ptxt">ERROR: <b>kit_data.db</b><br>could not be loaded.<br><br>Some previews may be missing.</div></div>
+  <div class="pbtns"><button class="wb def" onclick="this.closest('.popup').style.display='none'">OK</button><button class="wb" onclick="this.closest('.popup').style.display='none'">Ignore</button><button class="wb" onclick="this.closest('.popup').style.display='none'">Help</button></div>
+</div>
+
+<div class="popup" id="pop3" style="bottom:80px;left:300px;">
+  <div class="ptb"><span class="pico">ℹ</span><span class="pttl">Internet Explorer</span><span class="px" onclick="this.closest('.popup').style.display='none'">✕</span></div>
+  <div class="pbody" style="padding:8px 10px;"><span class="pico2">💻</span>
+    <div class="ptxt"><span class="blink">▌</span> <b>YOU ARE OUR<br><span id="vis-pop" style="font-size:16px;font-family:'VT323',monospace;color:#cc0000;">000000</span>th VISITOR!</b><br><br>CLICK TO CLAIM FREE PRIZE!!!</div>
+  </div>
+  <div class="pbtns"><button class="wb def" onclick="this.closest('.popup').style.display='none'">CLAIM NOW!!!</button><button class="wb" onclick="this.closest('.popup').style.display='none'">No thanks</button></div>
+</div>
+
+<div class="popup" id="pop-cart" style="top:50%;left:50%;transform:translate(-50%,-50%);">
+  <div class="ptb"><span class="pico">🛒</span><span class="pttl">Shopping Cart</span><span class="px" onclick="this.closest('.popup').style.display='none'">✕</span></div>
+  <div class="pbody"><span class="pico2">✅</span><div class="ptxt"><b id="cart-item-name">Item</b><br>has been added to your cart!<br><br>Cart total: <b id="cart-total">1</b> item(s)</div></div>
+  <div class="pbtns"><button class="wb def" onclick="this.closest('.popup').style.display='none'">Continue Shopping</button><button class="wb" onclick="tryCurrentKit()">Try Now</button></div>
+</div>
+
+<!-- ════════════ SHOP PAGE ════════════ -->
+<div class="page active" id="page-shop" style="bottom:30px;">
+  <div class="ie-chrome">
+    <div class="ie-titlebar">
+      <div class="ie-ico"></div>
+      <span class="ie-ttxt">MySprueKit.net - Build Kit Shop - Microsoft Internet Explorer</span>
+      <div class="tc">_</div><div class="tc">□</div><div class="tc cls">✕</div>
+    </div>
+    <div class="ie-menu">
+      <div class="mi">File</div><div class="mi">Edit</div><div class="mi">View</div><div class="mi">Favorites</div><div class="mi">Tools</div><div class="mi">Help</div>
+    </div>
+    <div class="ie-toolbar">
+      <div class="tbt"><span class="tbi">◀</span><span class="tbl">Back</span></div>
+      <div class="tbt" style="opacity:.4"><span class="tbi">▶</span><span class="tbl">Forward</span></div>
+      <div class="tbt"><span class="tbi">✕</span><span class="tbl">Stop</span></div>
+      <div class="tbt"><span class="tbi">↻</span><span class="tbl">Refresh</span></div>
+      <div class="tbt"><span class="tbi">🏠</span><span class="tbl">Home</span></div>
+      <div style="width:1px;height:24px;background:var(--win-dark);margin:0 3px;"></div>
+      <div class="tbt"><span class="tbi">🔍</span><span class="tbl">Search</span></div>
+      <div class="tbt"><span class="tbi">⭐</span><span class="tbl">Favorites</span></div>
+      <div class="tbt"><span class="tbi">📰</span><span class="tbl">History</span></div>
+      <div style="width:1px;height:24px;background:var(--win-dark);margin:0 3px;"></div>
+      <div class="ie-addr"><span>🌐</span><span>http://www.myspruekit.net/shop/catalog.html</span></div>
+      <div class="go">Go</div>
+    </div>
+
+    <div class="pg">
+      <div class="outer">
+
+        <!-- LEFT ADS -->
+        <div class="ad-col">
+          <div class="ad" style="background:linear-gradient(135deg,#ff0000,#880000);color:#fff;padding:10px 5px 8px;font-family:'Comic Sans MS',cursive;">
+            <div class="adt abl" style="font-size:13px;">⚠ VIRUS DETECTED ⚠</div>
+            <div class="adb" style="font-size:11px;margin:6px 0;">Your PC has<br><b>47 viruses!!</b><br>Click NOW!</div>
+            <div class="acta" style="background:#ff0;color:#f00;border-color:#ff0 #880 #880 #ff0;font-size:11px;padding:4px 12px;">SCAN FREE</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#ffff00,#ffcc00);color:#000;font-family:'Times New Roman',serif;padding:3px 4px;">
+            <div class="adt" style="font-size:12px;">🎉 YOU ARE SELECTED!!</div>
+            <div class="acta" style="background:#000080;color:#fff;border-color:#fff #000 #000 #fff;margin-top:3px;">CLAIM FREE NOKIA →</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#000088,#0000cc);color:#fff;padding:7px 5px;font-family:'Courier New',monospace;">
+            <div class="adt" style="color:#0ff;font-size:11px;">DOWNLOAD FREE</div>
+            <div class="adb" style="font-size:10px;margin:4px 0;">WinRAR 3.62<br>Kazaa Lite · Limewire</div>
+            <div class="a88" style="background:#000080;height:22px;line-height:22px;">FREE DL NOW</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#ff6600,#cc3300);color:#fff;font-family:Impact,'Arial Narrow',sans-serif;padding:12px 6px 10px;">
+            <div class="adt" style="font-size:17px;">HOT SINGLES 🔥</div>
+            <div class="adb" style="font-size:12px;margin:6px 0;line-height:1.6;">in your area!!<br>1000s of profiles</div>
+            <div class="acta" style="background:#ff0066;color:#fff;border-color:#ff99cc #880044 #880044 #ff99cc;font-size:12px;padding:5px 14px;">VIEW NOW</div>
+          </div>
+          <div class="ad" style="background:#111;color:#0f0;border:2px solid #0f0;padding:5px 3px;font-family:'Press Start 2P',monospace;">
+            <div class="adt" style="font-size:7px;color:#0f0;">H4CK3R Z0N3</div>
+            <div class="adb" style="font-size:8px;color:#0f0;margin:3px 0;font-family:monospace;">100% FREE · ILLEGAL</div>
+            <div class="acta" style="background:#0f0;color:#000;border-color:#0f0 #070 #070 #0f0;">ENTER &gt;</div>
+          </div>
+          <div class="ad" style="background:#fff;border:3px solid #ff0000;font-family:Georgia,serif;padding:10px 6px;">
+            <div class="adt" style="color:#ff0000;font-size:18px;line-height:1;">LOSE 30 LBS</div>
+            <div style="font-size:9px;color:#888;margin:2px 0;">Sponsored by MiracleThin™</div>
+            <div class="adb" style="font-size:11px;margin:5px 0;">in 2 WEEKS!!<br>Doctors HATE this!</div>
+            <div class="acta" style="background:#ff0000;color:#fff;border-color:#fff #880 #880 #fff;font-size:10px;">SECRET METHOD</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#006600,#003300);color:#0f0;font-family:'Arial Black',sans-serif;padding:4px;">
+            <div class="adt" style="font-family:'Press Start 2P';font-size:6px;color:#0f0;">MAKE $$$</div>
+            <div class="adb" style="font-size:9px;color:#0f0;margin:3px 0;">$5000/week · EASY</div>
+            <div class="acta" style="background:#ff0;color:#000;border-color:#ff0 #880 #880 #ff0;font-size:9px;">START NOW</div>
+          </div>
+          <div class="ad" style="background:repeating-linear-gradient(45deg,#ff00ff,#ff00ff 4px,#00ffff 4px,#00ffff 8px);padding:3px;font-family:Verdana,sans-serif;">
+            <div style="background:#000;padding:6px 4px;">
+              <div class="adt abl" style="color:#ff0;font-size:14px;">FREE iPOD!!</div>
+              <div class="adb" style="background:#fff;color:#000;margin-top:3px;padding:3px;font-size:10px;">Complete 1 offer!<br>iPod Mini 1GB</div>
+              <div class="acta" style="background:#000080;color:#fff;border-color:#fff #000 #000 #fff;">GET iPOD</div>
+            </div>
+          </div>
+        </div><!-- /left ads -->
+
+        <!-- SITE -->
+        <div class="site">
+          <div class="site-hdr">
+            <div class="site-logo">My<span>Sprue</span>Kit<span style="color:#aad4ff;font-size:18px;">.net</span></div>
+            <div style="font-family:'VT323';font-size:14px;color:#aad4ff;margin-left:10px;margin-top:4px;">~ build your own character ~</div>
+            <div class="hdr-r">
+              <span class="hdr-user">Welcome, GUEST_001</span>
+              <a href="#">[ Login ]</a><a href="#">[ Register ]</a><a href="#">[ Help ]</a>
+            </div>
+          </div>
+          <div class="site-nav">
+            <span class="nl act">🏠 Home</span><span class="nl">🛒 Shop</span><span class="nl">📷 Gallery</span>
+            <span class="nl">📋 Manual</span><span class="nl">💬 Forum</span><span class="nl">✉ Contact</span>
+            <span class="nl" style="margin-left:auto;border-left:1px solid rgba(255,255,255,.25);border-right:none;">🔍 Search</span>
+          </div>
+          <div class="marquee-wrap">
+            <div class="mq" id="mq-shop">★ WELCOME TO MYSPRUEKIT.NET ★ NEW KITS JUST DROPPED ★ FREE SHIPPING OVER $20 ★ KIT_003 ZZ SERRIEES NOW AVAILABLE ★ LIMITED STOCK ★ YOU ARE VISITOR #000000 ★ ADD US TO FAVORITES ★</div>
+          </div>
+          <div class="cw">
+            <div class="sb">
+              <div class="sbs">
+                <div class="sbh">Navigation</div>
+                <a class="sbl" href="#">🏠 Home</a><a class="sbl" href="#">📦 All Kits</a>
+                <a class="sbl" href="#">🆕 New Arrivals</a><a class="sbl" href="#">⭐ Top Rated</a>
+                <a class="sbl" href="#">💸 On Sale</a><a class="sbl" href="#">📷 Gallery</a><a class="sbl" href="#">💬 Forum</a>
+              </div>
+              <div class="sbs">
+                <div class="sbh">My Account</div>
+                <a class="sbl" href="#">🔑 Login</a><a class="sbl" href="#">📝 Register</a>
+                <a class="sbl" href="#">🛒 Cart (<span id="cart-count">0</span>)</a><a class="sbl" href="#">📋 Orders</a>
+              </div>
+              <div class="vbox">
+                <div class="vlbl">VISITORS</div>
+                <div class="vnum" id="vis-count">000000</div>
+                <div class="vlbl">since 2005</div>
+              </div>
+              <div class="sbs">
+                <div class="sbh">Links</div>
+                <div class="gbt bl">WinRAR</div><div class="gbt gn">Netscape</div>
+                <div class="gbt or">WinAMP</div><div class="gbt rd">FREE STUFF</div>
+              </div>
+              <div style="font-size:9px;color:#666;text-align:center;margin-top:8px;font-family:monospace;line-height:1.6;">
+                Best viewed in<br>Internet Explorer 6<br>800×600<br><br>
+                <span style="color:#000080;font-weight:bold;">☆ Add to Favorites ☆</span>
+              </div>
+            </div>
+            <div class="mc">
+              <div class="sct">Available Kits — Click to View Details</div>
+              <table id="kit-table">
+                <thead><tr><th>Preview</th><th>Kit Name</th><th>Description</th><th>Price</th><th>Stock</th><th>Order</th></tr></thead>
+                <tbody>
+                  <tr onclick="openDetail(1)" style="cursor:pointer;">
+                    <td>
+                      <div class="kthumb">
+                        <img src="src/v1_image.png" alt="ENER - Proto" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                        <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">
+                          <div class="mini-cube s1" style="transform-style:preserve-3d;"><div class="mf f"></div><div class="mf b"></div><div class="mf l"></div><div class="mf r"></div><div class="mf t"></div><div class="mf bt"></div></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="kname" onclick="event.stopPropagation();openDetail(1)">ENER - Proto<br><span style="font-size:9px;color:#666;font-weight:normal;">Classic Character</span></td>
+                    <td class="kdesc">The original MYSPRUEKIT character.<br>Fully poseable, Custom Solid Color.<br><span style="color:#0000aa;font-size:10px;">20 parts · 1:6 scale · full paint</span></td>
+                    <td class="kprice">$15<span style="font-size:12px;">.00</span></td>
+                    <td class="kstock"><span class="sok">✓ In Stock<br>(12 left)</span></td>
+                    <td onclick="event.stopPropagation()">
+                      <div class="btn-buy" onclick="openDetail(1)">BUY NOW</div>
+                      <div class="btn-cart" onclick="addCart('ENER - Proto')">▶ ADD CART</div>
+                    </td>
+                  </tr>
+                  <tr onclick="openDetail(2)" style="cursor:pointer;">
+                    <td>
+                      <div class="kthumb">
+                        <img src="src/v2_image.png" alt="ENER 2" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                        <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">
+                          <div class="mini-cube s2" style="transform-style:preserve-3d;"><div class="mf f" style="border-color:rgba(150,0,200,.7);background:rgba(100,0,150,.15);"></div><div class="mf b" style="border-color:rgba(150,0,200,.7);background:rgba(100,0,150,.15);"></div><div class="mf l" style="border-color:rgba(120,0,180,.5);"></div><div class="mf r" style="border-color:rgba(120,0,180,.5);"></div><div class="mf t" style="border-color:rgba(200,0,255,.4);"></div><div class="mf bt" style="border-color:rgba(200,0,255,.4);"></div></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="kname" onclick="event.stopPropagation();openDetail(2)">ENER 2 - Upgraded<br><span style="font-size:9px;color:#666;font-weight:normal;">UPGRADED 2nd Series</span></td>
+                    <td class="kdesc">Full color, half-heavy metallic mech.<br>Metallic finish, light-up eyes.<br><span style="color:#880088;font-size:10px;">21 parts · 1:6 scale · solid & metallic</span></td>
+                    <td class="kprice" style="color:#880088;">$22<span style="font-size:12px;">.00</span></td>
+                    <td class="kstock"><span class="slow">⚠ Low Stock<br>(3 left!)</span></td>
+                    <td onclick="event.stopPropagation()">
+                      <div class="btn-buy" style="background:#aa00aa;border-color:#660066;color:#fff;" onclick="openDetail(2)">BUY NOW</div>
+                      <div class="btn-cart" onclick="addCart('ENER 2 - Upgraded')">▶ ADD CART</div>
+                    </td>
+                  </tr>
+                  <tr onclick="openDetail(3)" style="cursor:pointer;">
+                    <td>
+                      <div class="kthumb">
+                        <img src="src/v3_image.png" alt="eDhid#@kUEZ1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                        <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">
+                          <div class="mini-cube s3" style="transform-style:preserve-3d;"><div class="mf f" style="border-color:rgba(0,160,80,.7);background:rgba(0,120,60,.15);"></div><div class="mf b" style="border-color:rgba(0,160,80,.7);background:rgba(0,120,60,.15);"></div><div class="mf l" style="border-color:rgba(0,130,60,.5);"></div><div class="mf r" style="border-color:rgba(0,130,60,.5);"></div><div class="mf t" style="border-color:rgba(0,200,100,.4);"></div><div class="mf bt" style="border-color:rgba(0,200,100,.4);"></div></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="kname" onclick="event.stopPropagation();openDetail(3)">eDhid#@kUEZ1!!zz&nbsp;<span class="blink" style="color:red;font-size:10px;">NEW!</span><br><span style="font-size:9px;color:#666;font-weight:normal;">ErrrrRorrrrr___UPgraded(?) ZZ</span></td>
+                    <td class="kdesc">Traumatizing pieces included.<br><span style="color:#006600;font-size:10px;">19 parts · 1:6 scale · glass & digital parts</span></td>
+                    <td class="kprice" style="color:#006600;">$28<span style="font-size:12px;">.00</span></td>
+                    <td class="kstock"><span class="snew">★ NEW DROP<br>Just arrived!</span></td>
+                    <td onclick="event.stopPropagation()">
+                      <div class="btn-buy" style="background:#006600;border-color:#004400;color:#fff;" onclick="openDetail(3)">BUY NOW</div>
+                      <div class="btn-cart" onclick="addCart('eDhid#@kUEZ1!!zz')">▶ ADD CART</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <br>
+              <div style="font-size:10px;color:#666;font-family:Tahoma;border-top:1px solid #ccc;padding-top:6px;">
+                * All kits ship fully assembled on sprue frame.<br>
+                * Digital download included with every order.<br>
+                * <span style="color:red;font-weight:bold;">WARNING:</span> Contains small parts. Not for children under 3.
+              </div>
+            </div>
+            <div class="rc">
+              <div class="rch">🔔 News</div>
+              <div class="rci"><b style="color:#000080;">Apr 2005</b><br>ZZ Serriees now in stock!</div>
+              <div class="rci"><b style="color:#000080;">Mar 2005</b><br>Forum launched! Say hi :)</div>
+              <div class="rci"><b style="color:#000080;">Feb 2005</b><br>First 100 orders get free sticker!</div>
+              <div class="rch" style="margin-top:8px;">⭐ Top Rated</div>
+              <div class="rci"><span style="color:#000080;font-weight:bold;">ENER;;</span><br>★★★★★<br><span style="font-size:9px;">"Amazing!" -user04</span></div>
+              <div class="rch" style="margin-top:8px;">🏆 Awards</div>
+              <div style="background:#ffff00;border:1px solid #cc9900;padding:4px;text-align:center;font-size:9px;margin-bottom:4px;">🥇 BEST HOBBY SITE 2021!</div>
+              <div style="background:#c0e0ff;border:1px solid #6699cc;padding:4px;text-align:center;font-size:9px;">Cool Site of the Day!</div>
+            </div>
+          </div>
+          <div class="bb">
+            <div class="bi">WinRAR<br>FREE DL</div>
+            <div class="bi" style="background:#004400;">NETSCAPE<br>NOW!</div>
+            <div class="bi" style="background:#660000;">FREE<br>RINGTONE</div>
+            <div style="flex:1;text-align:center;"><span style="font-family:'VT323';font-size:16px;color:#000080;">MySprueKit.net © 2005 &nbsp;·&nbsp; admin[at]myspruekit.net &nbsp;·&nbsp; <span class="blink" style="color:red;">● ONLINE</span></span></div>
+            <div class="bi" style="background:#000080;">INTERNET<br>EXPLORER</div>
+          </div>
+        </div><!-- /site -->
+
+        <!-- RIGHT ADS -->
+        <div class="ad-col">
+          <div class="ad" style="background:linear-gradient(135deg,#ff66cc,#cc0088);color:#fff;font-family:fantasy;padding:4px;">
+            <div class="adt abl" style="font-size:14px;">💰 YOU WON! 💰</div>
+            <div class="adb" style="font-size:9px;margin:2px 0;">$1,000,000 · claim NOW</div>
+            <div class="acta" style="background:#ff0;color:#c00;border-color:#ff0 #880 #880 #ff0;font-size:10px;">CLAIM $$$</div>
+          </div>
+          <div class="ad" style="background:#fff;border:2px solid #000080;font-family:Verdana,sans-serif;padding:10px 6px;">
+            <div class="adt" style="color:#000080;font-size:12px;">DOWNLOAD NOW!!</div>
+            <div class="adb" style="font-size:11px;margin:6px 0;">Napster 2.0<br>Bearshare FREE<br>100,000 songs!<br><span style="font-size:8px;color:#999;">totally legal*</span></div>
+            <div class="a88" style="background:#000080;height:26px;line-height:26px;">GET MUSIC FREE</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#ff6600,#cc3300);color:#fff;font-family:'Trebuchet MS',sans-serif;padding:7px 5px;">
+            <div class="adt" style="font-size:12px;">MAKE MONEY FAST</div>
+            <div class="adb" style="font-size:10px;margin:4px 0;">Nigerian Prince needs<br>YOUR help!! $45M<br>Send bank info 💸</div>
+            <div class="acta" style="background:#ff0;color:#000;border-color:#ff0 #880 #880 #ff0;">REPLY NOW</div>
+          </div>
+          <div class="ad" style="background:#000;color:#0f0;border:2px solid #0f0;padding:4px 3px;">
+            <div class="adt" style="color:#0f0;font-family:monospace;font-size:9px;">[ SYS_ALERT ] HACKED</div>
+            <div class="adb" style="color:#0f0;font-family:monospace;font-size:8px;margin:2px 0;">Pay $200 or else...</div>
+            <div class="acta" style="background:#0f0;color:#000;border-color:#0f0 #060 #060 #0f0;font-size:9px;">PAY NOW</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#ffff00,#ffcc00);color:#000;font-family:Tahoma,sans-serif;padding:12px 6px 10px;">
+            <div class="adt" style="font-size:16px;">⚡ FAST INTERNET ⚡</div>
+            <div class="adb" style="font-size:12px;margin:6px 0;line-height:1.7;">56K is SO SLOW!!<br>Upgrade to DSL!<br>Only $9.99/month!</div>
+            <div class="acta" style="background:#000080;color:#fff;border-color:#fff #000 #000 #fff;font-size:11px;padding:4px 14px;">SIGN UP TODAY</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#ff0000,#880000);color:#fff;padding:4px;font-family:'Comic Sans MS',cursive;">
+            <div class="adt abl" style="font-size:11px;">⚠ FINAL WARNING ⚠</div>
+            <div class="adb" style="font-size:9px;margin:2px 0;">Internet EXPIRES SOON!</div>
+            <div class="acta" style="background:#ff0;color:#f00;border-color:#ff0 #880 #880 #ff0;font-size:9px;">RENEW $4.99</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#c0c0c0,#808080);color:#000;font-family:'Lucida Console',monospace;padding:10px 5px;">
+            <div class="adt" style="font-size:13px;">EMOTICONS PACK 😎</div>
+            <div class="adb" style="font-size:10px;margin:6px 0;">1000+ MSN smileys<br>FREE download!<br>Works on AIM<br>ICQ &amp; Yahoo!</div>
+            <div class="acta" style="background:#000080;color:#fff;border-color:#fff #000 #000 #fff;">FREE DL</div>
+          </div>
+          <div class="ad" style="background:repeating-linear-gradient(90deg,#f00,#f90,#ff0,#0f0,#00f,#90f);padding:3px;">
+            <div style="background:#000;padding:6px 4px;">
+              <div class="adt" style="color:#fff;font-family:'Press Start 2P';font-size:7px;line-height:1.6;">U GOT MAIL!!</div>
+              <div class="adb" style="color:#ccc;font-size:10px;margin:4px 0;">Free HotMail!<br>250MB storage!</div>
+              <div class="acta" style="background:#0078d4;color:#fff;border-color:#fff #004 #004 #fff;">SIGN UP FREE</div>
+            </div>
+          </div>
+        </div><!-- /right ads -->
+
+      </div><!-- /outer -->
+    </div><!-- /pg -->
+
+    <div class="ie-status">
+      <div class="sp main" id="status-shop">✓ Done</div>
+      <div class="sp zone">Internet</div>
+    </div>
+  </div>
+</div><!-- /page-shop -->
+
+<!-- ════════════ DETAIL PAGE ════════════ -->
+<div class="page" id="page-detail" style="bottom:30px;">
+  <div class="ie-chrome">
+    <div class="ie-titlebar">
+      <div class="ie-ico"></div>
+      <span class="ie-ttxt" id="detail-title-bar">MySprueKit.net - Item Details - Microsoft Internet Explorer</span>
+      <div class="tc">_</div><div class="tc">□</div><div class="tc cls" onclick="showShop()">✕</div>
+    </div>
+    <div class="ie-menu">
+      <div class="mi">File</div><div class="mi">Edit</div><div class="mi">View</div><div class="mi">Favorites</div><div class="mi">Tools</div><div class="mi">Help</div>
+    </div>
+    <div class="ie-toolbar">
+      <div class="tbt" onclick="showShop()"><span class="tbi">◀</span><span class="tbl">Back</span></div>
+      <div class="tbt" style="opacity:.4"><span class="tbi">▶</span><span class="tbl">Forward</span></div>
+      <div class="tbt"><span class="tbi">✕</span><span class="tbl">Stop</span></div>
+      <div class="tbt"><span class="tbi">↻</span><span class="tbl">Refresh</span></div>
+      <div class="tbt"><span class="tbi">🏠</span><span class="tbl">Home</span></div>
+      <div style="width:1px;height:24px;background:var(--win-dark);margin:0 3px;"></div>
+      <div class="tbt"><span class="tbi">🔍</span><span class="tbl">Search</span></div>
+      <div class="tbt"><span class="tbi">⭐</span><span class="tbl">Favorites</span></div>
+      <div class="tbt"><span class="tbi">📰</span><span class="tbl">History</span></div>
+      <div style="width:1px;height:24px;background:var(--win-dark);margin:0 3px;"></div>
+      <div class="ie-addr"><span>🌐</span><span id="detail-url">http://www.myspruekit.net/item/001.html</span></div>
+      <div class="go">Go</div>
+    </div>
+
+    <div class="pg">
+      <div class="outer">
+
+        <!-- LEFT ADS (detail page) -->
+        <div class="ad-col">
+          <div class="ad" style="background:linear-gradient(135deg,#ff0000,#880000);color:#fff;padding:10px 5px 8px;font-family:'Comic Sans MS',cursive;">
+            <div class="adt abl" style="font-size:13px;">⚠ VIRUS DETECTED ⚠</div>
+            <div class="adb" style="font-size:11px;margin:6px 0;">Your PC has<br><b>47 viruses!!</b><br>Click NOW!</div>
+            <div class="acta" style="background:#ff0;color:#f00;border-color:#ff0 #880 #880 #ff0;font-size:11px;padding:4px 12px;">SCAN FREE</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#000088,#0000cc);color:#fff;padding:7px 5px;font-family:monospace;">
+            <div class="adt" style="color:#0ff;font-size:11px;">DOWNLOAD FREE</div>
+            <div class="adb" style="font-size:10px;margin:4px 0;">WinRAR 3.62<br>Kazaa Lite<br>Limewire Pro</div>
+            <div class="a88" style="background:#000080;height:22px;line-height:22px;">FREE DL NOW</div>
+          </div>
+          <div class="ad" style="background:#fff;border:3px solid #ff0000;font-family:Georgia,serif;padding:10px 6px;">
+            <div class="adt" style="color:#ff0000;font-size:18px;line-height:1;">LOSE 30 LBS</div>
+            <div class="adb" style="font-size:11px;margin:5px 0;">in 2 WEEKS!! Doctors HATE this trick!</div>
+            <div class="acta" style="background:#ff0000;color:#fff;border-color:#fff #880 #880 #fff;font-size:10px;">SECRET METHOD</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#ffff00,#ffcc00);color:#000;font-family:'Times New Roman',serif;padding:3px 4px;">
+            <div class="adt" style="font-size:12px;">🎉 YOU ARE SELECTED!!</div>
+            <div class="acta" style="background:#000080;color:#fff;border-color:#fff #000 #000 #fff;margin-top:3px;">CLAIM FREE NOKIA →</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#006600,#003300);color:#0f0;font-family:'Arial Black',sans-serif;padding:4px;">
+            <div class="adt" style="font-family:'Press Start 2P';font-size:6px;color:#0f0;">MAKE $$$</div>
+            <div class="adb" style="font-size:9px;color:#0f0;margin:3px 0;">$5000/week · EASY</div>
+            <div class="acta" style="background:#ff0;color:#000;border-color:#ff0 #880 #880 #ff0;font-size:9px;">START NOW</div>
+          </div>
+          <div class="ad" style="background:repeating-linear-gradient(45deg,#ff00ff,#ff00ff 4px,#00ffff 4px,#00ffff 8px);padding:3px;font-family:Verdana,sans-serif;">
+            <div style="background:#000;padding:6px 4px;">
+              <div class="adt abl" style="color:#ff0;font-size:14px;">FREE iPOD!!</div>
+              <div class="adb" style="background:#fff;color:#000;margin-top:3px;padding:3px;font-size:10px;">Complete 1 offer!<br>iPod Mini 1GB</div>
+              <div class="acta" style="background:#000080;color:#fff;border-color:#fff #000 #000 #fff;">GET iPOD</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DETAIL SITE -->
+        <div class="site">
+          <div class="site-hdr">
+            <div class="site-logo">My<span>Sprue</span>Kit<span style="color:#aad4ff;font-size:18px;">.net</span></div>
+            <div style="font-family:'VT323';font-size:14px;color:#aad4ff;margin-left:10px;margin-top:4px;">~ item details ~</div>
+            <div class="hdr-r">
+              <span class="hdr-user">Welcome, GUEST_001</span>
+              <a href="#">[ Login ]</a><a href="#">[ Register ]</a><a href="#">[ Help ]</a>
+            </div>
+          </div>
+          <div class="site-nav">
+            <span class="nl" onclick="showShop()">🏠 Home</span><span class="nl act">🛒 Shop</span><span class="nl">📷 Gallery</span>
+            <span class="nl">📋 Manual</span><span class="nl">💬 Forum</span><span class="nl">✉ Contact</span>
+            <span class="nl" style="margin-left:auto;border-left:1px solid rgba(255,255,255,.25);border-right:none;">🔍 Search</span>
+          </div>
+          <div class="marquee-wrap">
+            <div class="mq">★ ITEM DETAILS PAGE ★ ADD TO CART NOW ★ LIMITED STOCK ★ FREE SHIPPING OVER $20 ★ SECURE CHECKOUT ★ 30 DAY RETURN POLICY ★</div>
+          </div>
+
+          <div style="padding:10px;">
+            <span class="back-link" onclick="showShop()">← Back to Catalog</span>
+            <div class="sct" id="detail-section-title">Item Details — KIT_001</div>
+
+            <div class="detail-layout">
+              <!-- LEFT: IMAGE -->
+              <div class="detail-img-col">
+                <div class="detail-img-frame">
+                  <img id="detail-main-img" src="" alt="Kit Image" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                  <div id="detail-img-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:#d0d8e8;">
+                    <div style="font-family:'VT323',monospace;font-size:14px;color:#000080;text-align:center;">IMAGE<br>NOT FOUND<br><span style="font-size:10px;color:#808080;">Preview unavailable</span></div>
+                  </div>
+                </div>
+                <div class="detail-thumbs">
+                  <div class="detail-thumb active" id="thumb-main" onclick="switchImg('main')">
+                    <img id="detail-thumb-img" src="" alt="" onerror="this.style.display='none'"/>
+                  </div>
+                  <div class="detail-thumb" style="font-family:'Press Start 2P';font-size:6px;color:#000080;background:#e0e8f0;align-items:center;justify-content:center;display:flex;">3D<br>VIEW</div>
+                  <div class="detail-thumb" style="font-family:Tahoma;font-size:8px;color:#000080;background:#f0f8e0;align-items:center;justify-content:center;display:flex;text-align:center;line-height:1.3;">BOX<br>ART</div>
+                </div>
+                <div id="detail-reviews" style="margin-top:8px;padding:6px;background:#f0f8ff;border:1px solid #a0b8cc;font-family:Tahoma;font-size:10px;">
+  <b style="color:#000080;">★ Customer Reviews</b><br>
+  <span style="color:#cc6600;">★★★★★</span> "Amazing quality!" - user04<br>
+  <span style="color:#cc6600;">★★★★☆</span> "Ships fast, great kit" - kitfan99<br>
+  <span style="color:#cc6600;">★★★★★</span> "Best hobby kit 2005" - builder22<br>
+  <a href="#" style="color:var(--link);font-size:9px;">[ View all reviews ]</a>
+</div>
+</div>
+
+<!-- RIGHT: INFO -->
+<div class="detail-info-col">
+                <div class="detail-name" id="detail-name">ENER - Proto</div>
+                <div class="detail-sub" id="detail-sub">Classic Character · Kit No.001</div>
+
+                <div class="detail-price-box">
+                  <div class="detail-price" id="detail-price">$15.00</div>
+                  <div class="detail-price-note">USD · Incl. digital download · Free shipping over $20</div>
+                </div>
+
+                <table class="detail-table">
+                  <tr><td>Kit Number</td><td id="d-kitnum">KIT_001</td></tr>
+                  <tr><td>Series</td><td id="d-series">Classic Character</td></tr>
+                  <tr><td>Parts Count</td><td>20 pieces</td></tr>
+                  <tr><td>Scale</td><td>1:6 (approx. 30cm assembled)</td></tr>
+                  <tr><td>Material</td><td id="d-material">ABS Plastic · Full Paint</td></tr>
+                  <tr><td>Availability</td><td id="d-stock"><span class="sok">✓ In Stock (12 left)</span></td></tr>
+                  <tr><td>Ships From</td><td>Warehouse A · Est. 3-5 business days</td></tr>
+                  <tr><td>SKU</td><td id="d-sku">MSK-001-ENER</td></tr>
+                  <tr><td>Payment</td><td>Visa · MasterCard · PayPal · Check</td></tr>
+                  <tr><td>Returns</td><td>30 days unopened · See policy below</td></tr>
+                </table>
+
+                <div style="font-family:Tahoma;font-size:10px;font-weight:bold;color:#000080;margin-bottom:3px;">Terms of Agreement &amp; Purchase Policy:</div>
+                <div class="tos-box">
+                  By completing this purchase you agree to the following terms: (1) MySprueKit.net ("Company") provides no warranty beyond the statutory minimum. (2) Digital download files are non-refundable once accessed. (3) Physical items may be returned within 30 days of receipt provided they remain unopened and in original packaging; customer bears return shipping costs. (4) Company reserves the right to substitute equivalent components if original parts are unavailable. (5) Assembly instructions are provided in English only. (6) Company is not liable for any injury resulting from assembly or use of this product. (7) This product contains small parts and is not suitable for children under 36 months. (8) Images shown are for illustrative purposes; actual product colors may vary due to monitor calibration. (9) Pricing is subject to change without notice. (10) By clicking "BUY NOW" or "ADD TO CART" you confirm that you are at least 13 years of age and accept these terms in full. MySprueKit.net © 2005 All Rights Reserved.
+                </div>
+
+                <div style="font-family:Tahoma;font-size:10px;color:#666;margin-bottom:8px;">
+                  ☑ <input type="checkbox" id="tos-agree" style="vertical-align:middle;margin-right:4px;"/>
+                  <label for="tos-agree" style="cursor:pointer;">I have read and agree to the Terms of Agreement</label>
+                </div>
+
+                <div class="detail-actions">
+                  <button class="dbuy" onclick="buyNow()">🛒 BUY NOW</button>
+                  <button class="dcart" id="d-addcart" onclick="addCartDetail()">▶ ADD TO CART</button>
+                  <button class="dwish">♡ Wishlist</button>
+                  <button class="dwish" onclick="showShop()">← Back</button>
+                </div>
+
+                <div style="margin-top:10px;padding:6px;background:#fffbe0;border:1px solid #e0c840;font-family:Tahoma;font-size:10px;">
+                  <b style="color:#cc6600;">🔒 Secure Checkout:</b> Your payment info is encrypted with 128-bit SSL.<br>
+                  <b style="color:#006600;">✈ Free Shipping:</b> On orders over $20 USD within the continental US.<br>
+                  <b style="color:#000080;">📦 Packaging:</b> Ships assembled on original sprue frame in protective foam.
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- /detail site -->
+
+        <!-- RIGHT ADS (detail page) -->
+        <div class="ad-col">
+          <div class="ad" style="background:linear-gradient(135deg,#ff66cc,#cc0088);color:#fff;font-family:fantasy;padding:4px;">
+            <div class="adt abl" style="font-size:14px;">💰 YOU WON! 💰</div>
+            <div class="adb" style="font-size:9px;margin:2px 0;">$1,000,000 prize!</div>
+            <div class="acta" style="background:#ff0;color:#c00;border-color:#ff0 #880 #880 #ff0;font-size:10px;">CLAIM $$$</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#ff6600,#cc3300);color:#fff;font-family:'Trebuchet MS',sans-serif;padding:7px 5px;">
+            <div class="adt" style="font-size:12px;">MAKE MONEY FAST</div>
+            <div class="adb" style="font-size:10px;margin:4px 0;">Nigerian Prince needs YOUR help!! $45M available NOW</div>
+            <div class="acta" style="background:#ff0;color:#000;border-color:#ff0 #880 #880 #ff0;">REPLY NOW</div>
+          </div>
+          <div class="ad" style="background:#000;color:#0f0;border:2px solid #0f0;padding:4px 3px;">
+            <div class="adt" style="color:#0f0;font-family:monospace;font-size:9px;">[ SYS_ALERT ] HACKED</div>
+            <div class="adb" style="color:#0f0;font-family:monospace;font-size:8px;margin:2px 0;">Pay $200 or else...</div>
+            <div class="acta" style="background:#0f0;color:#000;border-color:#0f0 #060 #060 #0f0;font-size:9px;">PAY NOW</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#ffff00,#ffcc00);color:#000;font-family:Tahoma,sans-serif;padding:12px 6px 10px;">
+            <div class="adt" style="font-size:16px;">⚡ FAST INTERNET ⚡</div>
+            <div class="adb" style="font-size:12px;margin:6px 0;line-height:1.7;">56K is SO SLOW!!<br>DSL for $9.99/mo!</div>
+            <div class="acta" style="background:#000080;color:#fff;border-color:#fff #000 #000 #fff;font-size:11px;padding:4px 14px;">SIGN UP</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#c0c0c0,#808080);color:#000;font-family:'Lucida Console',monospace;padding:10px 5px;">
+            <div class="adt" style="font-size:13px;">EMOTICONS PACK 😎</div>
+            <div class="adb" style="font-size:10px;margin:6px 0;">1000+ MSN smileys FREE! AIM ICQ Yahoo!</div>
+            <div class="acta" style="background:#000080;color:#fff;border-color:#fff #000 #000 #fff;">FREE DL</div>
+          </div>
+          <div class="ad" style="background:linear-gradient(135deg,#ff0000,#880000);color:#fff;padding:4px;font-family:'Comic Sans MS',cursive;">
+            <div class="adt abl" style="font-size:11px;">⚠ FINAL WARNING ⚠</div>
+            <div class="adb" style="font-size:9px;margin:2px 0;">Internet EXPIRES SOON!</div>
+            <div class="acta" style="background:#ff0;color:#f00;border-color:#ff0 #880 #880 #ff0;font-size:9px;">RENEW $4.99</div>
+          </div>
+          <div class="ad" style="background:#fff;border:2px solid #000080;font-family:Verdana,sans-serif;padding:10px 6px;">
+            <div class="adt" style="color:#000080;font-size:12px;">ALSO CONSIDER:</div>
+            <div class="adb" style="font-size:10px;margin:6px 0;" id="also-consider">You might also like ENER 2!</div>
+            <div class="acta" style="background:#000080;color:#fff;border-color:#fff #000 #000 #fff;" onclick="showShop()">VIEW ALL</div>
+          </div>
+          <div class="ad" style="background:repeating-linear-gradient(90deg,#f00,#f90,#ff0,#0f0,#00f,#90f);padding:3px;">
+            <div style="background:#000;padding:6px 4px;">
+              <div class="adt" style="color:#fff;font-family:'Press Start 2P';font-size:7px;line-height:1.6;">U GOT MAIL!!</div>
+              <div class="adb" style="color:#ccc;font-size:10px;margin:4px 0;">Free HotMail!<br>250MB storage!</div>
+              <div class="acta" style="background:#0078d4;color:#fff;border-color:#fff #004 #004 #fff;">SIGN UP FREE</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="ie-status">
+      <div class="sp main" id="status-detail">✓ Done</div>
+      <div class="sp zone">Internet</div>
+    </div>
+  </div>
+</div><!-- /page-detail -->
+
+<!-- TASKBAR -->
+<div class="taskbar">
+  <div class="tb-start"><span style="font-size:16px;">⊞</span> start</div>
+  <div class="tb-win active" id="task-shop" onclick="showShop()"><span>🌐</span> MySprueKit.net - Shop...</div>
+  <div class="tb-win" id="task-detail" style="display:none" onclick="showDetail()"><span>🌐</span> Item Details...</div>
+  <div class="tb-win"><span>📁</span> My Documents</div>
+  <div class="tb-tray"><span>🔊</span><span>🌐</span><span id="clk">--:--</span></div>
+</div>
+
+<script>
+var urlParams = new URLSearchParams(window.location.search);
+var isViewerMode = urlParams.has('kit');
+
+if (isViewerMode) {
+  var fade = document.getElementById('fade');
+  var shopPage = document.getElementById('page-shop');
+  var detailPage = document.getElementById('page-detail');
+  var taskbar = document.querySelector('.taskbar');
+
+  if (fade) fade.style.display = 'none';
+  if (shopPage) shopPage.style.display = 'none';
+  if (detailPage) detailPage.style.display = 'none';
+  if (taskbar) taskbar.style.display = 'none';
+
+  document.querySelectorAll('.popup').forEach(function(pop){
+    pop.remove();
+  });
+
+  document.body.style.background = '#000';
+  document.body.style.overflow = 'hidden';
+}
+
+if (!isViewerMode) {
+
+  // ── Fade in ──
+  setTimeout(function(){document.getElementById('fade').classList.add('gone');},150);
+
+  // ── Visitor counter ──
+  (function(){
+    var count=parseInt(localStorage.getItem('msk_vis')||'401');
+    var last=localStorage.getItem('msk_last');
+    var now=Date.now();
+    if(!last||now-parseInt(last)>600000){count++;localStorage.setItem('msk_vis',count);localStorage.setItem('msk_last',now);}
+    function fmt(n){return String(n).padStart(6,'0');}
+    function upd(n){
+      var f=fmt(n);
+      var vc=document.getElementById('vis-count');if(vc)vc.textContent=f;
+      var vp=document.getElementById('vis-pop');if(vp)vp.textContent=f;
+      var mq=document.getElementById('mq-shop');if(mq)mq.innerHTML=mq.innerHTML.replace(/VISITOR #\d+/,'VISITOR #'+f);
+    }
+    upd(count);
+    setInterval(function(){if(Math.random()<0.3){count++;localStorage.setItem('msk_vis',count);upd(count);}},7000);
+  })();
+
+  // ── Status cycling ──
+  var stats=['✓ Done','Loading...','Connecting to myspruekit.net...','Transferring data...','✓ Done','Error: kit_data.db not found','✓ Done'];
+  var si=0;
+  setInterval(function(){
+    si=(si+1)%stats.length;
+    var s=document.getElementById('status-shop');if(s)s.textContent=stats[si];
+    var d=document.getElementById('status-detail');if(d)d.textContent=stats[si];
+  },3500);
+
+  // ── Popup drag ──
+  document.querySelectorAll('.popup').forEach(function(pop){
+    var tb=pop.querySelector('.ptb');if(!tb)return;
+    var dr=false,ox=0,oy=0;
+    tb.addEventListener('mousedown',function(e){dr=true;ox=e.clientX-pop.offsetLeft;oy=e.clientY-pop.offsetTop;pop.style.zIndex=5000;});
+    document.addEventListener('mousemove',function(e){if(!dr)return;pop.style.left=(e.clientX-ox)+'px';pop.style.top=(e.clientY-oy)+'px';pop.style.right='auto';pop.style.bottom='auto';});
+    document.addEventListener('mouseup',function(){dr=false;});
+  });
+
+  // stagger popups
+  document.querySelectorAll('.popup:not(#pop-cart)').forEach(function(p,i){
+    setTimeout(function(){p.style.display='block';},1200+i*900);
+  });
+
+  // ── Cart ──
+  var cartCount=0;
+  var currentDetailId=1;
+  var KIT_NAMES={'1':'ENER - Proto','2':'ENER 2 - Upgraded','3':'eDhid#@kUEZ1!!zz'};
+
+  function makeKitUrl(kit){
+    return window.location.pathname + '?kit=' + kit;
+  }
+
+ function makeViewerUrl(kit){
+  return '/viewer.html?kit=' + kit;
+}
+
+var TRY_NOW_URLS = {
+  '1': makeViewerUrl('v2'),
+  '2': makeViewerUrl('v1'),
+  '3': makeViewerUrl('v3')
+};
+
+function tryCurrentKit(){
+  var url = TRY_NOW_URLS[String(currentDetailId)] || makeViewerUrl('v1');
+  window.open(url, '_blank', 'noopener,noreferrer,width=1280,height=820');
+}
+
+  function addCart(name){
+    cartCount++;
+    var cc=document.getElementById('cart-count');if(cc)cc.textContent=cartCount;
+    var cn=document.getElementById('cart-item-name');if(cn)cn.textContent=name;
+    var ct=document.getElementById('cart-total');if(ct)ct.textContent=cartCount;
+    var pp=document.getElementById('pop-cart');if(pp){pp.style.display='block';pp.style.zIndex=6000;}
+  }
+
+  function addCartDetail(){
+    var n=document.getElementById('detail-name');
+    addCart(n?n.textContent:'Item');
+  }
+
+  function buyNow(){
+    if(!document.getElementById('tos-agree').checked){
+      alert('Please read and agree to the Terms of Agreement before purchasing.');
+      return;
+    }
+    addCartDetail();
+  }
+
+  // ── Kit data ──
+var KITS={
+  1:{
+    name:'ENER - Proto',
+    sub:'Classic Character · Kit No.001',
+    price:'$15.00',
+    kitnum:'KIT_001',
+    series:'Classic Character',
+    material:'ABS Plastic · Full Paint',
+    stock:'<span class="sok">✓ In Stock (12 left)</span>',
+    sku:'MSK-001-ENER',
+    img:'src/v1_image.png',
+    url:'001',
+    also:'You might also like ENER 2 - Upgraded!',
+    reviews:'<b style="color:#000080;">★ Customer Reviews</b><br><span style="color:#cc6600;">★★★★★</span> "Clean design and super nostalgic." - uneducatedkid04<br><span style="color:#cc6600;">★★★★☆</span> "Simple but really charming." - plastic_luvr<br><span style="color:#cc6600;">★★★★★</span> "My favorite sprue kit so far." - spruephobic22<br><a href="#" style="color:var(--link);font-size:9px;">[ View all reviews ]</a>'
+  },
+  2:{
+    name:'ENER 2 - Upgraded',
+    sub:'UPGRADED 2nd Series · Kit No.002',
+    price:'$22.00',
+    kitnum:'KIT_002',
+    series:'UPGRADED 2nd Series',
+    material:'Metallic ABS · Light-up Eyes',
+    stock:'<span class="slow">⚠ Low Stock (3 left!)</span>',
+    sku:'MSK-002-ENER2',
+    img:'src/v2_image.png',
+    url:'002',
+    also:'You might also like eDhid#@kUEZ1!!zz!',
+    reviews:'<b style="color:#000080;">★ Customer Reviews</b><br><span style="color:#cc6600;">★★★★☆</span> "Kinda bit more detailed than Proto model." - techie99<br><span style="color:#cc6600;">★★★☆☆</span> "I feel more with prototype sprue model." - yassifyingmaniac77<br><span style="color:#cc6600;">★★★☆☆</span> "Whats the deal with this one?" - A99ple_s0d@5333<br><a href="#" style="color:var(--link);font-size:9px;">[ View all reviews ]</a>'
+  },
+  3:{
+    name:'eDhid#@kUEZ1!!zz',
+    sub:'ErrrrRorrrrr___UPgraded(?) ZZ Serriees · Kit No.003',
+    price:'$28.00',
+    kitnum:'KIT_003',
+    series:'ZZ Serriees — Glass Edition',
+    material:'Translucent Plastic · Glass Parts',
+    stock:'<span class="snew">★ NEW DROP — Just Arrived!</span>',
+    sku:'MSK-003-ZZ',
+    img:'src/v3_image.png',
+    url:'003',
+    also:'You might also like ENER - Proto!',
+    reviews:'<b style="color:#000080;">★ Customer Reviews</b><br><span style="color:#cc6600;">★★★★★</span> "Weirdly satisfying in the best way possible." - errorangel<br><span style="color:#cc6600;">★★☆☆☆</span> "Traumatizing, my kid just shocked out and we went to hospital" - nerKa_123<br><span style="color:#cc6600;">★★★☆☆</span> "Cool, but wtf is that error? Is it only 4 me?" - ghosting_urmom987<br><a href="#" style="color:var(--link);font-size:9px;">[ View all reviews ]</a>'
+  }
+};
+
+  // ── Page switching ──
+  function showShop(){
+    document.getElementById('page-shop').classList.add('active');
+    document.getElementById('page-detail').classList.remove('active');
+    document.getElementById('task-shop').classList.add('active');
+    document.getElementById('task-detail').classList.remove('active');
+    document.getElementById('task-detail').style.display='none';
+  }
+
+  function showDetail(){
+    document.getElementById('page-detail').classList.add('active');
+    document.getElementById('page-shop').classList.remove('active');
+    document.getElementById('task-detail').classList.add('active');
+    document.getElementById('task-shop').classList.remove('active');
+  }
+
+  function openDetail(id){
+    currentDetailId=id;
+    var k=KITS[id];if(!k)return;
+    document.getElementById('detail-title-bar').textContent='MySprueKit.net - '+k.name+' - Microsoft Internet Explorer';
+    document.getElementById('detail-url').textContent='http://www.myspruekit.net/item/'+k.url+'.html';
+    document.getElementById('detail-section-title').textContent='Item Details — '+k.kitnum;
+    document.getElementById('detail-name').textContent=k.name;
+    document.getElementById('detail-sub').textContent=k.sub;
+    document.getElementById('detail-price').textContent=k.price;
+    document.getElementById('d-kitnum').textContent=k.kitnum;
+    document.getElementById('d-series').textContent=k.series;
+    document.getElementById('d-material').textContent=k.material;
+    document.getElementById('d-stock').innerHTML=k.stock;
+    document.getElementById('d-sku').textContent=k.sku;
+    document.getElementById('also-consider').textContent=k.also;
+    document.getElementById('detail-reviews').innerHTML = k.reviews;
+
+    var mi=document.getElementById('detail-main-img');
+    var mf=document.getElementById('detail-img-fallback');
+    var ti=document.getElementById('detail-thumb-img');
+    mi.style.display='';mf.style.display='none';
+    mi.src=k.img;ti.src=k.img;
+    mi.onerror=function(){this.style.display='none';mf.style.display='flex';};
+    document.getElementById('tos-agree').checked=false;
+    document.getElementById('task-detail').style.display='flex';
+    showDetail();
+  }
+}
+</script>
+</body>
+</html>
