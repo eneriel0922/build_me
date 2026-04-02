@@ -187,9 +187,12 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Courier Prime','Co
 .back-link{display:inline-block;margin-bottom:8px;font-family:Tahoma;font-size:11px;color:var(--link);cursor:pointer;text-decoration:underline;}
 .back-link:hover{color:#cc0000;}
 </style>
+  <script type="module" crossorigin src="/build_me/assets/index-D4rxn7GF.js"></script>
+  <link rel="stylesheet" crossorigin href="/build_me/assets/index-CtUVrciu.css">
 </head>
 <body>
 <div id="fade"></div>
+<div id="app" style="display:none; position:fixed; inset:0; z-index:1;"></div>
 
 <!-- ════════════ POPUPS ════════════ -->
 <div class="popup" id="pop1" style="top:120px;left:80px;">
@@ -344,7 +347,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Courier Prime','Co
               <table id="kit-table">
                 <thead><tr><th>Preview</th><th>Kit Name</th><th>Description</th><th>Price</th><th>Stock</th><th>Order</th></tr></thead>
                 <tbody>
-                  <tr onclick="openDetail(1)" style="cursor:pointer;">
+                  <tr data-kit="1" onclick="openDetail(1)" style="cursor:pointer;">
                     <td>
                       <div class="kthumb">
                         <img src="/build_me/images/v1_image.png" alt="ENER - Proto" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
@@ -362,7 +365,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Courier Prime','Co
                       <div class="btn-cart" onclick="addCart('ENER - Proto')">▶ ADD CART</div>
                     </td>
                   </tr>
-                  <tr onclick="openDetail(2)" style="cursor:pointer;">
+                  <tr data-kit="2" onclick="openDetail(2)" style="cursor:pointer;">
                     <td>
                       <div class="kthumb">
                         <img src="/build_me/images/v2_image.png" alt="ENER 2" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
@@ -380,7 +383,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Courier Prime','Co
                       <div class="btn-cart" onclick="addCart('ENER 2 - Upgraded')">▶ ADD CART</div>
                     </td>
                   </tr>
-                  <tr onclick="openDetail(3)" style="cursor:pointer;">
+                  <tr data-kit="3" onclick="openDetail(3)" style="cursor:pointer;">
                     <td>
                       <div class="kthumb">
                         <img src="/build_me/images/v3_image.png" alt="eDhid#@kUEZ1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
@@ -721,6 +724,8 @@ if (isViewerMode) {
   var shopPage = document.getElementById('page-shop');
   var detailPage = document.getElementById('page-detail');
   var taskbar = document.querySelector('.taskbar');
+  var app = document.getElementById('app');
+if (app) app.style.display = 'block';
 
   if (fade) fade.style.display = 'none';
   if (shopPage) shopPage.style.display = 'none';
@@ -790,7 +795,7 @@ if (!isViewerMode) {
   }
 
 function makeViewerUrl(kit){
-  return 'viewer.html?kit=' + kit;
+  return window.location.pathname + '?kit=' + kit;
 }
 
 var TRY_NOW_URLS = {
@@ -826,6 +831,8 @@ function tryCurrentKit(){
   }
 
   // ── Kit data ──
+
+  var APP_BASE = window.location.hostname.includes('github.io') ? '/build_me/' : '/';
 var KITS={
   1:{
     name:'ENER - Proto',
@@ -836,7 +843,7 @@ var KITS={
     material:'ABS Plastic · Full Paint',
     stock:'<span class="sok">✓ In Stock (12 left)</span>',
     sku:'MSK-001-ENER',
-    img:'/images/v1_image.png',
+    img: APP_BASE + 'images/v1_image.png',
     url:'001',
     also:'You might also like ENER 2 - Upgraded!',
     reviews:'<b style="color:#000080;">★ Customer Reviews</b><br><span style="color:#cc6600;">★★★★★</span> "Clean design and super nostalgic." - uneducatedkid04<br><span style="color:#cc6600;">★★★★☆</span> "Simple but really charming." - plastic_luvr<br><span style="color:#cc6600;">★★★★★</span> "My favorite sprue kit so far." - spruephobic22<br><a href="#" style="color:var(--link);font-size:9px;">[ View all reviews ]</a>'
@@ -850,7 +857,7 @@ var KITS={
     material:'Metallic ABS · Light-up Eyes',
     stock:'<span class="slow">⚠ Low Stock (3 left!)</span>',
     sku:'MSK-002-ENER2',
-    img:'/images/v2_image.png',
+    img: APP_BASE + 'images/v2_image.png',
     url:'002',
     also:'You might also like eDhid#@kUEZ1!!zz!',
     reviews:'<b style="color:#000080;">★ Customer Reviews</b><br><span style="color:#cc6600;">★★★★☆</span> "Kinda bit more detailed than Proto model." - techie99<br><span style="color:#cc6600;">★★★☆☆</span> "I feel more with prototype sprue model." - yassifyingmaniac77<br><span style="color:#cc6600;">★★★☆☆</span> "Whats the deal with this one?" - A99ple_s0d@5333<br><a href="#" style="color:var(--link);font-size:9px;">[ View all reviews ]</a>'
@@ -864,7 +871,7 @@ var KITS={
     material:'Translucent Plastic · Glass Parts',
     stock:'<span class="snew">★ NEW DROP — Just Arrived!</span>',
     sku:'MSK-003-ZZ',
-    img:'/images/v3_image.png',
+    img: APP_BASE + 'images/v3_image.png',
     url:'003',
     also:'You might also like ENER - Proto!',
     reviews:'<b style="color:#000080;">★ Customer Reviews</b><br><span style="color:#cc6600;">★★★★★</span> "Weirdly satisfying in the best way possible." - errorangel<br><span style="color:#cc6600;">★★☆☆☆</span> "Traumatizing, my kid just shocked out and we went to hospital" - nerKa_123<br><span style="color:#cc6600;">★★★☆☆</span> "Cool, but wtf is that error? Is it only 4 me?" - ghosting_urmom987<br><a href="#" style="color:var(--link);font-size:9px;">[ View all reviews ]</a>'
@@ -904,14 +911,39 @@ var KITS={
     document.getElementById('also-consider').textContent=k.also;
     document.getElementById('detail-reviews').innerHTML = k.reviews;
 
-    var mi=document.getElementById('detail-main-img');
-    var mf=document.getElementById('detail-img-fallback');
-    var ti=document.getElementById('detail-thumb-img');
-    mi.style.display='';mf.style.display='none';
-    mi.src=k.img;ti.src=k.img;
-    mi.onerror=function(){this.style.display='none';mf.style.display='flex';};
-    document.getElementById('tos-agree').checked=false;
-    document.getElementById('task-detail').style.display='flex';
+    var mi = document.getElementById('detail-main-img');
+var mf = document.getElementById('detail-img-fallback');
+var ti = document.getElementById('detail-thumb-img');
+
+var row = document.querySelector('#kit-table tr[data-kit="' + id + '"]');
+var listImg = row ? row.querySelector('.kthumb img') : null;
+var imgSrc = listImg ? listImg.currentSrc || listImg.src : k.img;
+
+mf.style.display = 'none';
+mi.style.display = '';
+ti.style.display = '';
+
+mi.onload = function () {
+  mf.style.display = 'none';
+  mi.style.display = '';
+};
+
+mi.onerror = function () {
+  mi.style.display = 'none';
+  mf.style.display = 'flex';
+};
+
+ti.onerror = function () {
+  ti.style.display = 'none';
+};
+
+mi.removeAttribute('src');
+ti.removeAttribute('src');
+
+requestAnimationFrame(function () {
+  mi.src = imgSrc;
+  ti.src = imgSrc;
+});
     showDetail();
   }
 }
