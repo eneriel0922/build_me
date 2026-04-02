@@ -347,7 +347,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Courier Prime','Co
                   <tr onclick="openDetail(1)" style="cursor:pointer;">
                     <td>
                       <div class="kthumb">
-                        <img src="src/v1_image.png" alt="ENER - Proto" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                        <img src="/images/v1_image.png" alt="ENER - Proto" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
                         <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">
                           <div class="mini-cube s1" style="transform-style:preserve-3d;"><div class="mf f"></div><div class="mf b"></div><div class="mf l"></div><div class="mf r"></div><div class="mf t"></div><div class="mf bt"></div></div>
                         </div>
@@ -365,7 +365,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Courier Prime','Co
                   <tr onclick="openDetail(2)" style="cursor:pointer;">
                     <td>
                       <div class="kthumb">
-                        <img src="src/v2_image.png" alt="ENER 2" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                        <img src="/images/v2_image.png" alt="ENER 2" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
                         <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">
                           <div class="mini-cube s2" style="transform-style:preserve-3d;"><div class="mf f" style="border-color:rgba(150,0,200,.7);background:rgba(100,0,150,.15);"></div><div class="mf b" style="border-color:rgba(150,0,200,.7);background:rgba(100,0,150,.15);"></div><div class="mf l" style="border-color:rgba(120,0,180,.5);"></div><div class="mf r" style="border-color:rgba(120,0,180,.5);"></div><div class="mf t" style="border-color:rgba(200,0,255,.4);"></div><div class="mf bt" style="border-color:rgba(200,0,255,.4);"></div></div>
                         </div>
@@ -383,7 +383,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Courier Prime','Co
                   <tr onclick="openDetail(3)" style="cursor:pointer;">
                     <td>
                       <div class="kthumb">
-                        <img src="src/v3_image.png" alt="eDhid#@kUEZ1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                        <img src="/images/v3_image.png" alt="eDhid#@kUEZ1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
                         <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">
                           <div class="mini-cube s3" style="transform-style:preserve-3d;"><div class="mf f" style="border-color:rgba(0,160,80,.7);background:rgba(0,120,60,.15);"></div><div class="mf b" style="border-color:rgba(0,160,80,.7);background:rgba(0,120,60,.15);"></div><div class="mf l" style="border-color:rgba(0,130,60,.5);"></div><div class="mf r" style="border-color:rgba(0,130,60,.5);"></div><div class="mf t" style="border-color:rgba(0,200,100,.4);"></div><div class="mf bt" style="border-color:rgba(0,200,100,.4);"></div></div>
                         </div>
@@ -789,8 +789,8 @@ if (!isViewerMode) {
     return window.location.pathname + '?kit=' + kit;
   }
 
- function makeViewerUrl(kit){
-  return '/viewer.html?kit=' + kit;
+function makeViewerUrl(kit){
+  return 'viewer.html?kit=' + kit;
 }
 
 var TRY_NOW_URLS = {
@@ -836,7 +836,7 @@ var KITS={
     material:'ABS Plastic · Full Paint',
     stock:'<span class="sok">✓ In Stock (12 left)</span>',
     sku:'MSK-001-ENER',
-    img:'src/v1_image.png',
+    img:'/images/v1_image.png',
     url:'001',
     also:'You might also like ENER 2 - Upgraded!',
     reviews:'<b style="color:#000080;">★ Customer Reviews</b><br><span style="color:#cc6600;">★★★★★</span> "Clean design and super nostalgic." - uneducatedkid04<br><span style="color:#cc6600;">★★★★☆</span> "Simple but really charming." - plastic_luvr<br><span style="color:#cc6600;">★★★★★</span> "My favorite sprue kit so far." - spruephobic22<br><a href="#" style="color:var(--link);font-size:9px;">[ View all reviews ]</a>'
@@ -850,7 +850,7 @@ var KITS={
     material:'Metallic ABS · Light-up Eyes',
     stock:'<span class="slow">⚠ Low Stock (3 left!)</span>',
     sku:'MSK-002-ENER2',
-    img:'src/v2_image.png',
+    img:'/images/v2_image.png',
     url:'002',
     also:'You might also like eDhid#@kUEZ1!!zz!',
     reviews:'<b style="color:#000080;">★ Customer Reviews</b><br><span style="color:#cc6600;">★★★★☆</span> "Kinda bit more detailed than Proto model." - techie99<br><span style="color:#cc6600;">★★★☆☆</span> "I feel more with prototype sprue model." - yassifyingmaniac77<br><span style="color:#cc6600;">★★★☆☆</span> "Whats the deal with this one?" - A99ple_s0d@5333<br><a href="#" style="color:var(--link);font-size:9px;">[ View all reviews ]</a>'
@@ -864,7 +864,7 @@ var KITS={
     material:'Translucent Plastic · Glass Parts',
     stock:'<span class="snew">★ NEW DROP — Just Arrived!</span>',
     sku:'MSK-003-ZZ',
-    img:'src/v3_image.png',
+    img:'/images/v3_image.png',
     url:'003',
     also:'You might also like ENER - Proto!',
     reviews:'<b style="color:#000080;">★ Customer Reviews</b><br><span style="color:#cc6600;">★★★★★</span> "Weirdly satisfying in the best way possible." - errorangel<br><span style="color:#cc6600;">★★☆☆☆</span> "Traumatizing, my kid just shocked out and we went to hospital" - nerKa_123<br><span style="color:#cc6600;">★★★☆☆</span> "Cool, but wtf is that error? Is it only 4 me?" - ghosting_urmom987<br><a href="#" style="color:var(--link);font-size:9px;">[ View all reviews ]</a>'
