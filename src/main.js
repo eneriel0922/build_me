@@ -372,6 +372,8 @@ const activeKit = KITS[kitId] || KITS.v1
 
 console.log('Active kit:', activeKit)
 
+if (params.has('kit')) {
+
 /** ---------- Scene ---------- **/
 const bg = createBackgroundByType(activeKit.background)
 const scene = new THREE.Scene()
@@ -1128,3 +1130,4 @@ function animate() {
 }
 
 animate()
+}
